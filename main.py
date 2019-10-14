@@ -223,13 +223,13 @@ def check_shutoff(config):
             print()
             print("===== Shutting down instance ======")
 
-        # resp = EC2.stop_instances(InstanceIds=[config['instance_id']])
+        resp = EC2.stop_instances(InstanceIds=[config['instance_id']])
 
-        # if config['debug']:
-        #     pprint(resp)
-        #     print()
+        if config['debug']:
+            pprint(resp)
+            print()
 
-        # logging.info(f'Shutting down instance.\n{resp}')
+        logging.info(f'Shutting down instance.\n{resp}')
 
 
 def pprint(obj):
