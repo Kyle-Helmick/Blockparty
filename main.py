@@ -14,8 +14,6 @@ from mcrcon import MCRcon
 logging.basicConfig(
     format='%(asctime)s [BlockParty] %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
-EC2 = None
-
 
 def main():
     config = load_configuration()
@@ -70,15 +68,9 @@ def load_configuration():
         with open(config['server_store'], 'r') as server_store:
             store = json.loads(server_store.read())
             if config['debug']:
-                print("========== Loaded store ===========")
+                print('========== Loaded store ===========')
                 pprint(store)
                 print()
-
-        for key in store.keys():
-            store[key] = []
-
-        with open(config['server_store'], 'w+') as server_store:
-            server_store.write(json.dumps(store, indent=2))
 
     except Exception as e:
         print(str(e))
@@ -93,7 +85,7 @@ def load_configuration():
     config['instance_id'] = response_json.get('instanceId')
 
     if config['debug']:
-        print("========== Loaded config ==========")
+        print('========== Loaded config ==========')
         pprint(config)
         print()
 
@@ -107,7 +99,7 @@ def refresh_config(config):
         for key in refreshed_config.keys():
             config[key] = refreshed_config[key]
     if before_config != config and config['debug']:
-        print("======== Refreshed config =========")
+        print('======== Refreshed config =========')
         pprint(config)
         print()
 
@@ -142,7 +134,7 @@ def update_player_numbers(config):
     server_store.close()
 
     if config['debug']:
-        print("========= Loaded statuses =========")
+        print('========= Loaded statuses =========')
         pprint(cached_statuses)
         print()
 
@@ -167,14 +159,14 @@ def update_player_numbers(config):
                 cached_statuses[server] = cached_statuses[server][-3:]
 
         else:
-            raise(Exception("Something's fucky"))
+            raise(Exception('Something\'s fucky'))
 
     server_store = open(config['server_store'], 'w')
     server_store.write(json.dumps(cached_statuses, indent=2))
     server_store.close()
 
     if config['debug']:
-        print("======== Updated statuses =========")
+        print('======== Updated statuses =========')
         pprint(cached_statuses)
         print()
 
@@ -186,19 +178,17 @@ def check_shutoff(config):
     cached_statuses = json.loads(server_store.read())
     server_store.close()
 
-    for server in cached_statuses.keys():
-        if len(cached_statuses[server]) < 3:
-            sum_players += 1  # keep alive for logging in
-        sum_players += sum(cached_statuses[server])
-
     if config['debug']:
-        print("========== Check shutoff ==========")
-        pprint({"total_historical_num_players": sum_players})
+        print('========== Check shutoff ==========')
+        pprint({'total_historical_num_players': sum_players})
         print()
 
-    if sum_players == 0:
+    all_long_running = len(list(filter(lambda count: count != 3, list(map(lambda server: len(
+        cached_statuses[server]), cached_statuses.keys()))))) == 0
+
+    if sum_players == 0 and all_long_running:
         if config['debug']:
-            print("========= Saving servers ==========")
+            print('========= Saving servers ==========')
         for server in cached_statuses.keys():
             try:
                 host = config['servers'][server]['host']
@@ -220,16 +210,12 @@ def check_shutoff(config):
                     f'An error occured for server {server}\n{str(e)}')
 
         if config['debug']:
-            print()
-            print("===== Shutting down instance ======")
-
-        resp = EC2.stop_instances(InstanceIds=[config['instance_id']])
-
-        if config['debug']:
-            pprint(resp)
-            print()
-
-        logging.info(f'Shutting down instance.\n{resp}')
+            print('===== Shutting down instance ======')
+        else:
+            with open(config['server_store'], 'w+') as server_store:
+                server_store.write(json.dumps({}, indent=2))
+            EC2 = boto3.client('ec2', region_name=config['region_name'])
+            resp = EC2.stop_instances(InstanceIds=[config['instance_id']])
 
 
 def pprint(obj):
