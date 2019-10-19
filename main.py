@@ -33,11 +33,9 @@ def main():
             'Instance [{}] not found in running ec2 instances'.format(config['instance_id'])))
 
     if config['debug']:
-        while(True):
-            refresh_config(config)
-            update_player_numbers(config)
-            check_shutoff(config)
-            time.sleep(config['player_check_interval'])
+        refresh_config(config)
+        update_player_numbers(config)
+        check_shutoff(config)
     else:
         update_player_numbers(config)
         check_shutoff(config)
@@ -177,6 +175,9 @@ def check_shutoff(config):
     server_store = open(config['server_store'], 'r')
     cached_statuses = json.loads(server_store.read())
     server_store.close()
+
+    for key, val in cached_statuses.items():
+        sum_players += sum(val)
 
     if config['debug']:
         print('========== Check shutoff ==========')
