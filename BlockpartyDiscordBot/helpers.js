@@ -1,8 +1,8 @@
 module.exports = {
-  botWasMentioned: (msg, client) => {
+  botWasMentioned: (client, msg) => {
     return msg.mentions.users.get(client.user.id) !== undefined
   },
-  botIsntAuthor: (msg, client) => {
+  botIsntAuthor: (client, msg) => {
     return msg.author.id !== client.user.id
   }
 }

@@ -1,10 +1,12 @@
-module.exports = (msg, ec2, DEFAULT_ERR) => {
+module.exports = (client, msg, ec2, DEFAULT_ERR) => {
   ec2.describeInstances({}, (err, data) => {
     if (err) {
       console.error(err)
       msg.reply(DEFAULT_ERR)
     } else {
-      var instances = data['Reservations'][0]['Instances']
+      var instances = data['Reservations'].map(
+        reservation => reservation['Instances'][0]
+      )
       var response = ''
 
       for (i in instances) {

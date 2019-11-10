@@ -1,5 +1,6 @@
-module.exports = (msg, ec2, DEFAULT_ERR) => {
+module.exports = (client, msg, ec2, DEFAULT_ERR) => {
   let match = msg.content.match(/.*stop (.+)/)
+  let noMatch = true
 
   if (match === null || match.length <= 1) {
     msg.reply(`Try saying "<@${client.user.id}> stop [name of server]"`)
@@ -13,17 +14,20 @@ module.exports = (msg, ec2, DEFAULT_ERR) => {
       console.error(err)
       msg.reply(DEFAULT_ERR)
     } else {
-      var instances = data['Reservations'][0]['Instances']
+      var instances = data['Reservations'].map(
+        reservation => reservation['Instances'][0]
+      )
 
-      for (i in instances) {
-        instanceName = instances[i]['Tags'].filter(
+      instances.forEach(instance => {
+        var instanceName = instance['Tags'].filter(
           tag => tag['Key'] === 'Name'
         )[0]['Value']
 
         if (instanceName === serverQuery) {
-          instanceId = instances[i]['InstanceId']
+          instanceId = instance['InstanceId']
+          noMatch = false
 
-          if (instances[i]['State']['Name'] == 'stopped') {
+          if (instance['State']['Name'] === 'stopped') {
             msg.reply('That server is already stopped!')
           } else {
             ec2.stopInstances({ InstanceIds: [instanceId] }, (err, data) => {
@@ -35,11 +39,13 @@ module.exports = (msg, ec2, DEFAULT_ERR) => {
               msg.reply(`${instanceName} is shutting down!`)
             })
           }
-        } else {
-          msg.reply(
-            `Try double checking the server name with "<@${client.user.id}> list"`
-          )
         }
+      })
+
+      if (noMatch) {
+        msg.reply(
+          `Try double checking the server name with "<@${client.user.id}> list"`
+        )
       }
     }
   })
