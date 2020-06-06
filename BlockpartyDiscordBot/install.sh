@@ -34,12 +34,12 @@ WantedBy=multi-user.target
 HEREDOC
 ) > blockpartydiscordbot.$1.service
 
-# chmod 644 blockpartydiscordbot.$1.service
+chmod 644 blockpartydiscordbot.$1.service
 
-# sudo mv blockpartydiscordbot.$1.service /etc/systemd/system
+sudo mv blockpartydiscordbot.$1.service /etc/systemd/system
 
-# sudo systemctl daemon-reload
+sudo systemctl daemon-reload
 
-# sudo systemctl start blockpartydiscordbot.$1
+sudo systemctl start blockpartydiscordbot.$1
 
-# sudo systemctl enable blockpartydiscordbot.$1
+sudo systemctl enable blockpartydiscordbot.$1
