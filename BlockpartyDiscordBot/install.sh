@@ -26,7 +26,8 @@ After=network.target
 Type=simple
 User=$user
 WorkingDirectory=$dir
-ExecStart=NODE_ENV=$1 $node $dir/index.js
+Environment=NODE_ENV=$1
+ExecStart=$node $dir/index.js
 Restart=on-failure
 
 [Install]
