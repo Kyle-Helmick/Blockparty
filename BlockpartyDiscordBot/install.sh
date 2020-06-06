@@ -5,6 +5,16 @@ npm install
 dir=$(pwd)
 node=$(which node)
 user=$(whoami)
+discord_server=$1
+
+if [ $# -eq 0 ]
+    then
+        echo "You must supply a discord server name:"
+        echo "./install.sh <discord-server-name>"
+        exit 1
+fi
+
+cp config/default.json config/$1.json
 
 (
 cat <<HEREDOC
@@ -16,21 +26,20 @@ After=network.target
 Type=simple
 User=$user
 WorkingDirectory=$dir
-ExecStart=$node $dir/index.js
+ExecStart=NODE_ENV=$1 $node $dir/index.js
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 HEREDOC
-) > blockpartydiscordbot.service
+) > blockpartydiscordbot.$1.service
 
-chmod 644 blockpartydiscordbot.service
+# chmod 644 blockpartydiscordbot.$1.service
 
-sudo mv blockpartydiscordbot.service /etc/systemd/system
+# sudo mv blockpartydiscordbot.$1.service /etc/systemd/system
 
-sudo systemctl daemon-reload
+# sudo systemctl daemon-reload
 
-sudo systemctl start blockpartydiscordbot
+# sudo systemctl start blockpartydiscordbot.$1
 
-sudo systemctl enable blockpartydiscordbot
-
+# sudo systemctl enable blockpartydiscordbot.$1

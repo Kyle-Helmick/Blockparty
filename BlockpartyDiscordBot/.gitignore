@@ -2,6 +2,13 @@
 # Created by https://www.gitignore.io/api/node
 # Edit at https://www.gitignore.io/?templates=node
 
+### Creds ###
+config/
+!config/default.json
+
+### Service Files ###
+*.service
+
 ### Node ###
 # Logs
 logs

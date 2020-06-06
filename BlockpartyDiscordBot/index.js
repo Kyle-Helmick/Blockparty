@@ -1,4 +1,4 @@
-require('dotenv').config()
+const config = require('config')
 const Discord = require('discord.js')
 const EC2 = require('aws-sdk').EC2
 
@@ -7,22 +7,22 @@ const list = require('./list')
 const start = require('./start')
 const stop = require('./stop')
 
-const REQ_ENV_VAR = [
+const REQ_CONFIG = [
   'DISCORD_TOKEN',
   'AWS_ACCESS_KEY_ID',
   'AWS_SECRET_ACCESS_KEY',
-  'AWS_REGION'
+  'AWS_REGION',
 ]
 
 const DEFAULT_ERR = 'Oops I ran into a problem. Go find Lemons.'
 
-REQ_ENV_VAR.forEach(envVar => {
-  if (!(envVar in process.env)) {
+REQ_CONFIG.forEach((c) => {
+  if (!config.has(c)) {
     throw new Error(
-      `Using system env or a .env file make sure ${envVar} is available to Blockparty.`
+      `Using the config file generated under config/ make sure ${c} is defined.`
     )
   }
-  console.log(`Loaded ${envVar}:${process.env[envVar]}`)
+  console.log(`Loaded ${c}:${config.get(c)}`)
 })
 
 console.log()
@@ -30,16 +30,16 @@ console.log()
 const client = new Discord.Client()
 
 const ec2 = new EC2({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION
+  accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
+  secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
+  region: config.get('AWS_REGION'),
 })
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
 
-client.on('message', msg => {
+client.on('message', (msg) => {
   if (
     helpers.botIsntAuthor(client, msg) &&
     helpers.botWasMentioned(client, msg)
@@ -59,4 +59,4 @@ client.on('message', msg => {
   }
 })
 
-client.login(process.env.DISCORDAUTH)
+client.login(config.get('DISCORD_TOKEN'))
