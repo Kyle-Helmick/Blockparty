@@ -23,7 +23,6 @@ module.exports = (client, msg, ec2, DEFAULT_ERR) => {
           response += `${instanceName}: ${instances[i]['State']['Name']}`
         } catch (e) {
           console.error(e)
-          continue
         }
       }
 

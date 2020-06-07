@@ -43,7 +43,6 @@ module.exports = (client, msg, ec2, DEFAULT_ERR) => {
           }
         } catch (e) {
           console.error(e)
-          continue
         }
       })
 
