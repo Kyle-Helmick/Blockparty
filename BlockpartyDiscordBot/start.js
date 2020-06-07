@@ -21,8 +21,12 @@ module.exports = (client, msg, ec2, DEFAULT_ERR) => {
       instances.forEach((instance) => {
         try {
           var instanceName = instance['Tags'].filter(
-            (tag) => tag['Key'] === 'Name'
+            (tag) => tag['Key'] === 'Minecraft'
           )[0]['Value']
+
+          if (instanceName === '') {
+            return // skip instances who's Minecraft tag is blank
+          }
 
           if (instanceName === serverQuery) {
             instanceId = instance['InstanceId']

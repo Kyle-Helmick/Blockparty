@@ -10,21 +10,23 @@ module.exports = (client, msg, ec2, DEFAULT_ERR) => {
 
       var response = ''
 
-      for (i in instances) {
-        if (i !== 0) {
-          response += '\n'
-        }
-
+      instances.forEach((instance) => {
         try {
-          instanceName = instances[i]['Tags'].filter(
-            (tag) => tag['Key'] === 'Name'
+          var instanceName = instance['Tags'].filter(
+            (tag) => tag['Key'] === 'Minecraft'
           )[0]['Value']
 
-          response += `${instanceName}: ${instances[i]['State']['Name']}`
+          if (instanceName === '') {
+            return // skip instances who's Minecraft tag is blank
+          }
+
+          var newline = response === '' ? '' : '\n'
+
+          response += `${newline}${instanceName}: ${instance['State']['Name']}`
         } catch (e) {
           console.error(e)
         }
-      }
+      })
 
       console.log(`${msg.author.tag} listed instances`)
       msg.reply(response)
