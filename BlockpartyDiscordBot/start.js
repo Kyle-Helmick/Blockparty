@@ -15,30 +15,35 @@ module.exports = (client, msg, ec2, DEFAULT_ERR) => {
       msg.reply(DEFAULT_ERR)
     } else {
       var instances = data['Reservations'].map(
-        reservation => reservation['Instances'][0]
+        (reservation) => reservation['Instances'][0]
       )
 
-      instances.forEach(instance => {
-        var instanceName = instance['Tags'].filter(
-          tag => tag['Key'] === 'Name'
-        )[0]['Value']
+      instances.forEach((instance) => {
+        try {
+          var instanceName = instance['Tags'].filter(
+            (tag) => tag['Key'] === 'Name'
+          )[0]['Value']
 
-        if (instanceName === serverQuery) {
-          instanceId = instance['InstanceId']
-          noMatch = false
+          if (instanceName === serverQuery) {
+            instanceId = instance['InstanceId']
+            noMatch = false
 
-          if (instance['State']['Name'] === 'running') {
-            msg.reply('That server is already running!')
-          } else {
-            ec2.startInstances({ InstanceIds: [instanceId] }, (err, data) => {
-              if (err) {
-                console.error(err)
-                msg.reply(DEFAULT_ERR)
-              }
-              console.log(`${msg.author.tag} started ${instanceName}`)
-              msg.reply(`${instanceName} is starting up!`)
-            })
+            if (instance['State']['Name'] === 'running') {
+              msg.reply('That server is already running!')
+            } else {
+              ec2.startInstances({ InstanceIds: [instanceId] }, (err, data) => {
+                if (err) {
+                  console.error(err)
+                  msg.reply(DEFAULT_ERR)
+                }
+                console.log(`${msg.author.tag} started ${instanceName}`)
+                msg.reply(`${instanceName} is starting up!`)
+              })
+            }
           }
+        } catch (e) {
+          console.error(e)
+          continue
         }
       })
 
