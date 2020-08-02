@@ -1,0 +1,12 @@
+version: '3'
+services:
+    discordbot:
+        image: "node:12"
+        user: "node"
+        volumes:
+            - ./:/home/node/BlockpartyDiscordBot
+        working_dir: /home/node/BlockpartyDiscordBot
+        environment:
+            - NODE_ENV=production
+        command: "npm start"
+        restart: unless-stopped
