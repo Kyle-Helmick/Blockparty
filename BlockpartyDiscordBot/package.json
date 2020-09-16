@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm install && node index.js"
+    "clean-build": "rm -rf build",
+    "lint": "eslint src/*/**",
+    "compile": "tsc",
+    "copy-config": "cp -r config build",
+    "build": "npm install && npm run clean-build && npm run compile && npm run lint && npm run copy-config",
+    "start": "npm run build && NODE_ENV=production node build/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +18,28 @@
     "aws-sdk": "^2.752.0",
     "config": "^3.3.1",
     "discord.js": "github:discordjs/discord.js",
-    "dotenv": "^8.2.0"
+    "module-alias": "^2.2.2"
+  },
+  "devDependencies": {
+    "@tsconfig/node12": "^1.0.7",
+    "@types/config": "0.0.36",
+    "@types/node": "^14.10.2",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "eslint": "^7.9.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  },
+  "_moduleAliases": {
+    "@aws-helper": "./build/aws-helper",
+    "@config-helper": "./build/config-helper",
+    "@constants": "./build/constants",
+    "@discord-helper": "./build/discord-helper",
+    "@rcon-helper": "./build/rcon-helper"
   }
 }

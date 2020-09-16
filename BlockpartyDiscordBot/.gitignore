@@ -5,6 +5,7 @@
 ### Creds ###
 config/
 !config/default.json
+build/
 
 ### Service Files ###
 *.service
