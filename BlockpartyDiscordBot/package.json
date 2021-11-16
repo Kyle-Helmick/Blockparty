@@ -16,7 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "argparse": "^2.0.1",
-    "aws-sdk": "^2.756.0",
+    "aws-sdk": "^2.814.0",
     "config": "^3.3.1",
     "discord.js": "github:discordjs/discord.js",
     "module-alias": "^2.2.2"
